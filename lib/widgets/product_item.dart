@@ -14,7 +14,7 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // in products_grid.dart we add data provider for Product
-    final product = Provider.of<Product>(context);
+    final product = Provider.of<Product>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile( // like list tile
@@ -31,13 +31,17 @@ class ProductItem extends StatelessWidget {
           ),
         ),
         footer: GridTileBar(
-          backgroundColor: Colors.black87,
-          leading: IconButton(
-            icon: Icon(product.isFavorite? Icons.favorite: Icons.favorite_border),
-            color: Theme.of(context).accentColor,
-            onPressed: () {
-              product.toggleFavoriteStatus();
-            },
+          backgroundColor: Colors.black87, // Consumer always listen to changes means always call build method 
+          leading: Consumer<Product>( // Consumer provided by Provider and helps to give the data as Provider.of(context) does
+            builder: (ctx, product, child) => IconButton( // we use child as add widget and use it inside where you want to use this because child widget not built again
+              icon: Icon(product.isFavorite? Icons.favorite: Icons.favorite_border),
+              color: Theme.of(context).accentColor,
+              onPressed: () {
+                product.toggleFavoriteStatus();
+              },
+              //icon: child, // Example like if use child in this way child component cannot be built again
+            ),
+            //child: widget,
           ),
           title: Text(
             product.title,
@@ -50,6 +54,6 @@ class ProductItem extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ); 
   }
 }
