@@ -15,8 +15,9 @@ class ProductsGrid extends StatelessWidget {
     return GridView.builder( // like listView Builder for large dynamic list
       padding: const EdgeInsets.all(10.0),
       itemCount: products.length,
-      itemBuilder: (ctx, index) => ChangeNotifierProvider( // notifier will notify if there is change with this product happen
-        create: (ctx) => products[index], //adding provider of product type 
+      itemBuilder: (ctx, index) => ChangeNotifierProvider.value( // notifier will notify if there is change with this product happen
+        //create: (ctx) => products[index], //adding provider of product type 
+        value: products[index], // if we value don't depend on context then use this way to get value
         child: ProductItem(
           // products[index].id,
           // products[index].title, 
