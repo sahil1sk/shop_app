@@ -15,10 +15,13 @@ class ProductsGrid extends StatelessWidget {
     return GridView.builder( // like listView Builder for large dynamic list
       padding: const EdgeInsets.all(10.0),
       itemCount: products.length,
-      itemBuilder: (ctx, index) => ProductItem(
-        products[index].id,
-        products[index].title, 
-        products[index].imageUrl,
+      itemBuilder: (ctx, index) => ChangeNotifierProvider( // notifier will notify if there is change with this product happen
+        create: (ctx) => products[index], //adding provider of product type 
+        child: ProductItem(
+          // products[index].id,
+          // products[index].title, 
+          // products[index].imageUrl,
+        ),
       ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount( // for fixed items count
         crossAxisCount: 2, // for 2 columns
