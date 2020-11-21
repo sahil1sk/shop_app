@@ -45,6 +45,11 @@ class Products with ChangeNotifier {
     return [..._items]; // returning the copy of items
   }
 
+  // return type of Product
+  Product findById(String id) {
+    return _items.firstWhere((prod) => prod.id == id); // getting the item using id
+  }
+
   void addProduct() {
     //_items.add();
     // notifyListeners(); available because of ChangeNotifier
