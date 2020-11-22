@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/cart.dart';
+import '../providers/cart.dart' show Cart; // we tell that we only need Cart class from cart.dart file
+import '../widgets/cart_item.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
@@ -45,6 +46,18 @@ class CartScreen extends StatelessWidget {
                   )
                 ],
               ),
+            ),
+          ),
+          SizedBox(height: 10),
+          Expanded(
+            child: ListView.builder(
+              itemBuilder: (ctx, index) => CartItem(
+                id: cart.items.values.toList()[index].id, // .values.toList() we need value so of map inside so we convert in this way
+                title: cart.items.values.toList()[index].title, 
+                quantity: cart.items.values.toList()[index].quantity, 
+                price: cart.items.values.toList()[index].price,
+              ),
+              itemCount: cart.items.length,
             ),
           )
         ],
