@@ -16,11 +16,16 @@ class CartItem {
 
 class Cart with ChangeNotifier {
   // here map key is of String type and its value of CartItem type
-  Map<String, CartItem> _items;
+  Map<String, CartItem> _items = {};
 
   // returning the cartItems
   Map<String, CartItem> get items {
     return {..._items};
+  }
+
+  // for counting total no of cart item
+  int get itemCount {
+    return _items.length;
   }
 
   // adding item in cart function
@@ -35,7 +40,6 @@ class Cart with ChangeNotifier {
           price: existingCartItem.price,
         ));
     } else {
-
       // .putIfAbsent take funtion that creates the value
       _items.putIfAbsent(productId, () => CartItem(
         id: DateTime.now().toString(),
@@ -44,6 +48,7 @@ class Cart with ChangeNotifier {
         quantity: 1,
       ));
     }
+    notifyListeners();
   }
 
 }

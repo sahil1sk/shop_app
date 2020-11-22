@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/products_grid.dart';
+import '../widgets/badge.dart';
+import '../providers/cart.dart';
 
 //enum helps to sequence no behind labels
 enum FilterOptions {
@@ -46,6 +49,16 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 value: FilterOptions.All,
               ),
             ],
+          ),
+          Consumer<Cart>( // data Provider
+            builder: (ctx, cartData, child) => Badge( // Badge is our custom widget
+              child: child,
+              value: cartData.itemCount.toString(),
+            ),
+            child: IconButton( // so this child will cannot be built 
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {},
+            ),
           ),
         ],
       ),
