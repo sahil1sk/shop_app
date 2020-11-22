@@ -4,14 +4,22 @@ import 'package:provider/provider.dart'; // here we use the provider package to 
 import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
 import './providers/products.dart';
+import './providers/cart.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider( // available because of provider package
-      create: (ctx) => Products(), // creating the instance of class which data we want to provide
+    return MultiProvider( // to wrap with multiple data provider use given way
+      providers: [
+        ChangeNotifierProvider( // available because of provider package
+          create: (ctx) => Products(), // creating the instance of class which data we want to provide
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => Cart(),
+        ),
+      ],
       child: MaterialApp(
         title: 'MyShop',
         theme: ThemeData(
