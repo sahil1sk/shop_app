@@ -49,9 +49,10 @@ class CartScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10),
-          Expanded(
+          Expanded( // for taking the height as available in the list
             child: ListView.builder(
               itemBuilder: (ctx, index) => CartItem(
+                productId: cart.items.keys.toList()[index], // the way of get the key
                 id: cart.items.values.toList()[index].id, // .values.toList() we need value so of map inside so we convert in this way
                 title: cart.items.values.toList()[index].title, 
                 quantity: cart.items.values.toList()[index].quantity, 

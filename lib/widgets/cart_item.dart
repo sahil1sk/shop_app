@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/cart.dart';
 
 class CartItem extends StatelessWidget {
   final String id;
+  final String productId;
   final int quantity;
   final double price;
   final String title;
 
   CartItem({
+    this.productId,
     this.id,
     this.quantity,
     this.price,
@@ -15,23 +20,45 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 4,
+    return Dismissible( // this widget will help to remove the item from the list in animated way
+      key: ValueKey(id), // unique key as we do for list
+      direction: DismissDirection.endToStart, // means dismiss list only when user swipe from right to left
+      onDismissed: (direction) { // this function will take place when we dismiss or delete the item from the list 
+        //direction argument in which direction we dismissed
+        Provider.of<Cart>(context, listen: false).removeItem(productId);
+      },
+      background: Container( // this is container behind list when list become swippable
+        color: Theme.of(context).errorColor, // default error color is red
+        child: Icon(
+          Icons.delete,
+          color: Colors.white,
+          size: 40,
+        ),
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.only(right: 20),
+        margin: EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 4,
+        ),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(8),
-        child: ListTile(
-          leading: CircleAvatar(
-            child: Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: FittedBox(child: Text('\$$price')),
+      child: Card(
+        margin: EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 4,
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: ListTile(
+            leading: CircleAvatar(
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: FittedBox(child: Text('\$$price')),
+              ),
             ),
+            title: Text(title),
+            subtitle: Text('Total \$${(price * quantity)}'),
+            trailing: Text('$quantity x'),
           ),
-          title: Text(title),
-          subtitle: Text('Total \$${(price * quantity)}'),
-          trailing: Text('$quantity x'),
         ),
       ),
     );
