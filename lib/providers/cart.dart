@@ -28,6 +28,16 @@ class Cart with ChangeNotifier {
     return _items.length;
   }
 
+  // for returning total amount
+  double get totalAmount {
+    var total = 0.0;
+    // for go upon each object we using for loop
+    _items.forEach((key, cartItem) { 
+      total += cartItem.price * cartItem.quantity;
+    });
+    return total;
+  }
+
   // adding item in cart function
   void addItem(String productId, double price, String title) {
     // checking the if any key match with productId
