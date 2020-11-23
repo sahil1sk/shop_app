@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/cart.dart' show Cart; // we tell that we only need Cart class from cart.dart file
 import '../widgets/cart_item.dart';
+import '../providers/orders.dart' show Orders; // we are getting order class from the file
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
@@ -40,7 +41,16 @@ class CartScreen extends StatelessWidget {
                   ),
                   Spacer(), // Text SizedBox Chip on one side and FlatButton on one side because of spacer and mainAxis alignment
                   FlatButton(
-                    onPressed: () {}, 
+                    onPressed: () {
+                      Provider.of<Orders>(
+                        context,
+                        listen: false,
+                      ).addOrder(
+                        cart.items.values.toList(), // converting the whole map into list
+                        cart.totalAmount,
+                      );
+                      cart.clear();
+                    }, 
                     child: Text('ORDER NOW'),
                     textColor: Theme.of(context).primaryColor,
                   )
