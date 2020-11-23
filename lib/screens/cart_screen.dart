@@ -32,7 +32,7 @@ class CartScreen extends StatelessWidget {
                   SizedBox(width: 5), // for spacing
                   Chip( // an element with rounded corner used to display info
                     label: Text(
-                      '\$${cart.totalAmount}',
+                      '\$${cart.totalAmount.toStringAsFixed(2)}', // for showing only 2 fraction digit or after decimal
                       style: TextStyle(
                         color: Theme.of(context).primaryTextTheme.headline6.color,
                       ),
