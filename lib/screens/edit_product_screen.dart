@@ -50,8 +50,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   // for saving the data inside form this function is trigger by app bar icon
   void _saveForm() {
+    // in isValid we will get value of true if all the validators return null if any error then it will return false
+    final isValid = _form.currentState.validate(); // this will trigger all the validators
+    if(!isValid) return; // if not valid
     _form.currentState.save(); // saving the form current state means save all the data which are in the fields
-    
+
   }
 
 
@@ -71,12 +74,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
+          //autovalidateMode: AutovalidateMode.onUserInteraction, // this method will call automatically all the validators or user interaction
           key: _form, // so here we pass our global key so that we use Form methods
           child: ListView(
             children: <Widget>[
               TextFormField( // connected with form behind the scene
                 decoration: InputDecoration( // to showing the decoration
                   labelText: 'Title', // showing the label inside dummy data
+                  //errorStyle: TextStyle(fontWeight: FontWeight.bold), // for giving style to error
+                  // but we are using default style
                 ),
                 textInputAction: TextInputAction.next, // means after enter go to the next input not submit the whole form
                 onFieldSubmitted: (value) { // on field submitted we will set focus to the price focus node
@@ -90,6 +96,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       imageUrl: _editiedProduct.imageUrl,
                       id: null,
                   );
+                },
+                validator: (value) { // when we call the validate method on the form state than this validator method is called
+                  if (value.isEmpty){
+                    return 'Please provide value'; // return the message which you want to show as error message
+                  }
+                  return null; // returning null means input is correct
                 },
               ),
               TextFormField( // connected with form behind the scene
