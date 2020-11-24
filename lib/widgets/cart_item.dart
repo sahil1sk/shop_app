@@ -27,6 +27,30 @@ class CartItem extends StatelessWidget {
         //direction argument in which direction we dismissed
         Provider.of<Cart>(context, listen: false).removeItem(productId);
       },
+      confirmDismiss: (direaction) { // if the user is confident to dismiss
+        //return Future.value(true);
+        return showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text('Do you want to remove the item from the cart'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('No'),
+                onPressed: (){
+                  Navigator.of(ctx).pop(false); // return false which will get by confirm dismiss
+                },
+              ),
+              FlatButton(
+                child: Text('Yes'),
+                onPressed: (){
+                  Navigator.of(ctx).pop(true); // return true value 
+                },
+              ),
+            ],
+          ),
+        );
+      },
       background: Container( // this is container behind list when list become swippable
         color: Theme.of(context).errorColor, // default error color is red
         child: Icon(
