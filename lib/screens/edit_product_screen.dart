@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/products.dart';
 import '../providers/product.dart';
+
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product';
@@ -57,7 +60,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final isValid = _form.currentState.validate(); // this will trigger all the validators
     if(!isValid) return; // if not valid
     _form.currentState.save(); // saving the form current state means save all the data which are in the fields
-
+    Provider.of<Products>(
+        context, 
+        listen: false
+    ).addProduct(_editiedProduct);
+    Navigator.of(context).pop();
   }
 
 

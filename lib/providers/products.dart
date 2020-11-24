@@ -55,8 +55,16 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id); // getting the item using id
   }
 
-  void addProduct() {
-    //_items.add();
+  void addProduct(Product product) {
+    final newProduct = Product(
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.imageUrl,
+      id: DateTime.now().toString(),
+    );
+    _items.add(newProduct); // adding the product in the list
+    //_items.insert(0, newProduct); // at the start of the list
     // notifyListeners(); available because of ChangeNotifier
     // when this will run the only widgets not other only widgets that use this provider will rebuilt again 
     // they understand there is some change happen in provider so they adopt that change
