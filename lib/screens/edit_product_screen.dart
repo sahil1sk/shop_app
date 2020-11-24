@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../providers/product.dart';
+
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product';
 
@@ -12,6 +14,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _descriptionFocusNode = FocusNode(); // for showing focus on description
   final _imageUrlController = TextEditingController(); // for getting the text
   final _imageUrlFocusNode = FocusNode();
+  // <FormState> means using for the Form Widget
+  final _form = GlobalKey<FormState>(); // we make the global key for submit data
+  var _editiedProduct = Product(
+    id: null,
+    title: '',
+    price: 0,
+    description: '',
+    imageUrl: '',
+  );
 
   @override
   void initState() {
@@ -37,18 +48,30 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
+  // for saving the data inside form this function is trigger by app bar icon
+  void _saveForm() {
+    _form.currentState.save(); // saving the form current state means save all the data which are in the fields
+    
+  }
+
 
   @override
   Widget build(BuildContext context) {
 
-    print("IMage url is there" + _imageUrlController.text);
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Product'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: _saveForm,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
+          key: _form, // so here we pass our global key so that we use Form methods
           child: ListView(
             children: <Widget>[
               TextFormField( // connected with form behind the scene
@@ -58,6 +81,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 textInputAction: TextInputAction.next, // means after enter go to the next input not submit the whole form
                 onFieldSubmitted: (value) { // on field submitted we will set focus to the price focus node
                   FocusScope.of(context).requestFocus(_priceFocusNode);
+                },
+                onSaved: (value) { // this function is called _saveForm
+                  _editiedProduct = Product(
+                      title: value,
+                      price: _editiedProduct.price,
+                      description: _editiedProduct.description,
+                      imageUrl: _editiedProduct.imageUrl,
+                      id: null,
+                  );
                 },
               ),
               TextFormField( // connected with form behind the scene
@@ -70,6 +102,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 onFieldSubmitted: (value) { // on field submitted we will set focus to the price focus node
                   FocusScope.of(context).requestFocus(_descriptionFocusNode); // when submitted then show focus on description node
                 },
+                onSaved: (value) { // this function is called _saveForm
+                  _editiedProduct = Product(
+                    title: _editiedProduct.title,
+                    price: double.parse(value), //(value as double),
+                    description: _editiedProduct.description,
+                    imageUrl: _editiedProduct.imageUrl,
+                    id: null,
+                  );
+                },
               ),
               TextFormField( // connected with form behind the scene
                 decoration: InputDecoration( // to showing the decoration
@@ -78,6 +119,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 maxLines: 3, // for setup max amount of line user can fill
                 keyboardType: TextInputType.multiline, // for supporting multiline
                 focusNode: _descriptionFocusNode,
+                onSaved: (value) { // this function is called _saveForm
+                  _editiedProduct = Product(
+                    title: _editiedProduct.title,
+                    price: _editiedProduct.price, //(value as double),
+                    description: value,
+                    imageUrl: _editiedProduct.imageUrl,
+                    id: null,
+                  );
+                },
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -110,6 +160,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       textInputAction: TextInputAction.done,
                       controller: _imageUrlController,
                       focusNode: _imageUrlFocusNode,
+                      onFieldSubmitted: (val) => _saveForm(), // here we also call _saveForm function to save whole form data
+                      onSaved: (value) { // this function is called _saveForm
+                        _editiedProduct = Product(
+                          title: _editiedProduct.title,
+                          price: _editiedProduct.price, //(value as double),
+                          description: _editiedProduct.description,
+                          imageUrl: value,
+                          id: null,
+                        );
+                      },
                     ),
                   ),
                 ],
