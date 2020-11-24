@@ -59,6 +59,20 @@ class ProductItem extends StatelessWidget {
                 product.price, 
                 product.title,
               );
+              // Scaffold.of(context).openDrawer(); // helps to open drawer if our parent or this widget tree using drawer
+              Scaffold.of(context).hideCurrentSnackBar(); // if there  is any current snackbar than hide that first and then show new one
+              Scaffold.of(context).showSnackBar( // showing snackbar
+                SnackBar(
+                  content: Text('Added item to cart!'),
+                  duration: Duration(seconds: 2), // showing for 2 seconds
+                  action: SnackBarAction( // if we want to do some actions
+                    label: 'UNDO',
+                    onPressed: () {
+                      cart.removeSingleItem(product.id);
+                    },
+                  ),
+                ),
+              );
             },
           ),
         ),
