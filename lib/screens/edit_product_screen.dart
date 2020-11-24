@@ -27,10 +27,38 @@ class _EditProductScreenState extends State<EditProductScreen> {
     imageUrl: '',
   );
 
+  var _initValues = {
+    'title': '',
+    'description': '',
+    'price': '',
+    'imageUrl': '',
+  };
+
+  var _isInit = true;
+
   @override
   void initState() {
     super.initState();
     _imageUrlFocusNode.addListener(_updateImageUrl); // adding the event when ever there is change in focus then we will call inside method
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if(_isInit) {
+      final productId = ModalRoute.of(context).settings.arguments as String;
+      if(productId != null){
+        _editiedProduct = Provider.of<Products>(context, listen: false).findById(productId);
+        _initValues = {
+          'title': _editiedProduct.title,
+          'description': _editiedProduct.description,
+          'price': _editiedProduct.price.toString(),
+          'imageUrl': ''
+        };
+        _imageUrlController.text = _editiedProduct.imageUrl;
+      }
+    }
+    _isInit = false;
   }
 
   @override
@@ -60,17 +88,24 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final isValid = _form.currentState.validate(); // this will trigger all the validators
     if(!isValid) return; // if not valid
     _form.currentState.save(); // saving the form current state means save all the data which are in the fields
-    Provider.of<Products>(
-        context, 
-        listen: false
-    ).addProduct(_editiedProduct);
+    if(_editiedProduct.id != null) {
+      Provider.of<Products>(
+          context,
+          listen: false
+      ).updateProduct(_editiedProduct.id, _editiedProduct);
+    } else {
+      Provider.of<Products>(
+          context,
+          listen: false
+      ).addProduct(_editiedProduct);
+    }
+
     Navigator.of(context).pop();
   }
 
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Product'),
@@ -89,6 +124,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: <Widget>[
               TextFormField( // connected with form behind the scene
+                initialValue: _initValues['title'],
                 decoration: InputDecoration( // to showing the decoration
                   labelText: 'Title', // showing the label inside dummy data
                   //errorStyle: TextStyle(fontWeight: FontWeight.bold), // for giving style to error
@@ -100,11 +136,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
                 onSaved: (value) { // this function is called _saveForm
                   _editiedProduct = Product(
-                      title: value,
-                      price: _editiedProduct.price,
-                      description: _editiedProduct.description,
-                      imageUrl: _editiedProduct.imageUrl,
-                      id: null,
+                    title: value,
+                    price: _editiedProduct.price,
+                    description: _editiedProduct.description,
+                    imageUrl: _editiedProduct.imageUrl,
+                    id: _editiedProduct.id,
+                    isFavorite: _editiedProduct.isFavorite,
                   );
                 },
                 validator: (value) { // when we call the validate method on the form state than this validator method is called
@@ -115,6 +152,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField( // connected with form behind the scene
+                initialValue: _initValues['price'],
                 decoration: InputDecoration( // to showing the decoration
                   labelText: 'Price', // showing the label inside dummy data
                 ),
@@ -130,7 +168,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     price: double.parse(value), //(value as double),
                     description: _editiedProduct.description,
                     imageUrl: _editiedProduct.imageUrl,
-                    id: null,
+                    id: _editiedProduct.id,
+                    isFavorite: _editiedProduct.isFavorite,
                   );
                 },
                 validator: (val) {
@@ -143,13 +182,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   if (double.parse(val) <= 0) {
                     return 'Enter number greater than zero';
                   }
-                  if (!val.endsWith('.png') && !val.endsWith('.jpg') && !val.endsWith('.jpeg')){
-                    return 'Enter a valid image url';
-                  }
                   return null; // if all condition pass then return null means every then write
                 },
               ),
               TextFormField( // connected with form behind the scene
+                initialValue: _initValues['description'],
                 decoration: InputDecoration( // to showing the decoration
                   labelText: 'Description', // showing the label inside dummy data
                 ),
@@ -162,7 +199,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     price: _editiedProduct.price, //(value as double),
                     description: value,
                     imageUrl: _editiedProduct.imageUrl,
-                    id: null,
+                    id: _editiedProduct.id,
+                    isFavorite: _editiedProduct.isFavorite,
                   );
                 },
                   validator: (val) {
@@ -213,12 +251,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           price: _editiedProduct.price, //(value as double),
                           description: _editiedProduct.description,
                           imageUrl: value,
-                          id: null,
+                          id: _editiedProduct.id,
+                          isFavorite: _editiedProduct.isFavorite,
                         );
                       },
                       validator: (val) { // funtion is called by in our _saveForm method
                         if(val.isEmpty){
                           return 'Please enter an image URL.';
+                        }
+
+                        if (!val.endsWith('.png') && !val.endsWith('.jpg') && !val.endsWith('.jpeg')){
+                          return 'Enter a valid image url';
                         }
                         if(!val.startsWith('http') && !val.startsWith('https')) {
                           return 'Enter a valid url';

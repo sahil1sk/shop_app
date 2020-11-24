@@ -70,4 +70,15 @@ class Products with ChangeNotifier {
     // they understand there is some change happen in provider so they adopt that change
     notifyListeners(); 
   }
+
+  void updateProduct(String id, Product editiedProduct) {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    if(prodIndex >= 0){
+      _items[prodIndex] = editiedProduct;
+      notifyListeners();
+    } else {
+
+    }
+
+  }
 }
