@@ -44,6 +44,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
   // given function will trigger
   void _updateImageUrl() {
     if(!_imageUrlFocusNode.hasFocus) { // if there is no focus on imageUrl the we call inside functions
+      if(_imageUrlController.text.isEmpty){ // if the text is empty in url then return not call setState funtion
+        return;
+      }
       setState(() {}); // so when ever value will change from image url we will make build
     }
   }
@@ -73,7 +76,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
+        child: Form( // Remember form is used under stateful widgets
           //autovalidateMode: AutovalidateMode.onUserInteraction, // this method will call automatically all the validators or user interaction
           key: _form, // so here we pass our global key so that we use Form methods
           child: ListView(
@@ -123,6 +126,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     id: null,
                   );
                 },
+                validator: (val) {
+                  if(val.isEmpty) {
+                    return 'Please Enter Price';
+                  }
+                  if(double.tryParse(val) == null) { // try parse will not through error if parsing fail it will return null then
+                    return 'Please Enter a valid number';
+                  }
+                  if (double.parse(val) <= 0) {
+                    return 'Enter number greater than zero';
+                  }
+                  if (!val.endsWith('.png') && !val.endsWith('.jpg') && !val.endsWith('.jpeg')){
+                    return 'Enter a valid image url';
+                  }
+                  return null; // if all condition pass then return null means every then write
+                },
               ),
               TextFormField( // connected with form behind the scene
                 decoration: InputDecoration( // to showing the decoration
@@ -140,6 +158,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     id: null,
                   );
                 },
+                  validator: (val) {
+                    if (val.isEmpty) {
+                      return 'Please enter a description';
+                    }
+                    if (val.length < 10) {
+                      return 'Should be at least 10 characters long';
+                    }
+                    return null; // if all condition pass then return null means every then write
+                  }
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -181,6 +208,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           imageUrl: value,
                           id: null,
                         );
+                      },
+                      validator: (val) { // funtion is called by in our _saveForm method
+                        if(val.isEmpty){
+                          return 'Please enter an image URL.';
+                        }
+                        if(!val.startsWith('http') && !val.startsWith('https')) {
+                          return 'Enter a valid url';
+                        }
+                        return null;
                       },
                     ),
                   ),
