@@ -65,28 +65,31 @@ class Products with ChangeNotifier {
     // http is package which we import
     http.post(
       url, 
-      body: json.encode({
+      body: json.encode({ // json.encode available because we import dart:convert
         'title': product.title,
         'description': product.description,
         'imageUrl': product.imageUrl,
         'price': product.price,
         'isFavorite': product.isFavorite
       }), 
-    );
-
-    final newProduct = Product(
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      imageUrl: product.imageUrl,
-      id: DateTime.now().toString(),
-    );
-    _items.add(newProduct); // adding the product in the list
+    ).then((response) {
+      //print(json.decode(response.body));
+      final newProduct = Product(
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        id: json.decode(response.body)['name'],
+      );
+      _items.add(newProduct); // adding the product in the list
+        
+      notifyListeners();
+    });
+    
     //_items.insert(0, newProduct); // at the start of the list
     // notifyListeners(); available because of ChangeNotifier
     // when this will run the only widgets not other only widgets that use this provider will rebuilt again 
-    // they understand there is some change happen in provider so they adopt that change
-    notifyListeners(); 
+    // they understand there is some change happen in provider so they adopt that change 
   }
 
   // for updating the product
