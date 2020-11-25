@@ -22,6 +22,7 @@ class ProductsOverviewScreen extends StatefulWidget {
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavorites = false;
   var _isInit = true;
+  var _isLoading = false;
 
   @override // our widget lifecycle method call first only once
   void initState() {
@@ -33,10 +34,17 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   }
 
   @override // widget life cycle method will call when any change in there widget
-  void didChangeDependencies() {
+  void didChangeDependencies() { // we are not able to use asyn & await on the life cycle methods
     super.didChangeDependencies();
     if(_isInit) {
-      Provider.of<Products>(context).fetchAndSetProducts(); // calling the fetch data method
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      }); // calling the fetch data method
     }
     _isInit = false;
   }
@@ -86,7 +94,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid(_showOnlyFavorites),
+      body: _isLoading ? Center(
+        child: CircularProgressIndicator(), // loading indicator
+        ) : ProductsGrid(_showOnlyFavorites),
     );
   }
 }
