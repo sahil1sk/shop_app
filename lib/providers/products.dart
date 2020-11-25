@@ -58,6 +58,18 @@ class Products with ChangeNotifier {
         .firstWhere((prod) => prod.id == id); // getting the item using id
   }
 
+  // void means our awiat that we use which will not return anything
+  Future<void> fetchAndSetProducts() async {
+    const url ='https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it    
+
+    try{
+      final response =  await http.get(url);
+      print(json.decode(response.body));
+    }catch(err){
+      throw err;
+    }
+  }
+
   // helps to add new products // Future<void> means will return a future
   Future<void> addProduct(Product product) async {
     //const url = 'https://flutter-learn-f4b08.firebaseio.com/'; // our firebase database url

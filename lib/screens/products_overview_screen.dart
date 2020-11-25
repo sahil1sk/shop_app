@@ -6,6 +6,7 @@ import './cart_screen.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
 import '../providers/cart.dart';
+import '../providers/products.dart';
 
 //enum helps to sequence no behind labels
 enum FilterOptions {
@@ -20,7 +21,25 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavorites = false;
+  var _isInit = true;
 
+  @override // our widget lifecycle method call first only once
+  void initState() {
+    super.initState();
+    // we will use this approach to get the provider context
+    // Future.delayed(Duration.zero).then((_) { // Duration.zero means no delay
+    //   Provider.of<Products>(context).fetchAndSetProducts();
+    // });
+  }
+
+  @override // widget life cycle method will call when any change in there widget
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if(_isInit) {
+      Provider.of<Products>(context).fetchAndSetProducts(); // calling the fetch data method
+    }
+    _isInit = false;
+  }
 
   @override
   Widget build(BuildContext context) {
