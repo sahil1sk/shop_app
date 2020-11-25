@@ -1,4 +1,7 @@
+import 'dart:convert'; // thses offeres tools to converting data like the object data to json data
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http; // so we normally use it like http.
 
 import './product.dart';
 
@@ -55,7 +58,22 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id); // getting the item using id
   }
 
+  // helps to add new products
   void addProduct(Product product) {
+    //const url = 'https://flutter-learn-f4b08.firebaseio.com/'; // our firebase database url
+    const url = 'https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it
+    // http is package which we import
+    http.post(
+      url, 
+      body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'imageUrl': product.imageUrl,
+        'price': product.price,
+        'isFavorite': product.isFavorite
+      }), 
+    );
+
     final newProduct = Product(
       title: product.title,
       description: product.description,
