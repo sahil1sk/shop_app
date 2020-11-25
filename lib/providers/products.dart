@@ -58,26 +58,26 @@ class Products with ChangeNotifier {
         .firstWhere((prod) => prod.id == id); // getting the item using id
   }
 
-  // helps to add new products
-  Future<void> addProduct(Product product) {
+  // helps to add new products // Future<void> means will return a future
+  Future<void> addProduct(Product product) async {
     //const url = 'https://flutter-learn-f4b08.firebaseio.com/'; // our firebase database url
-    const url =
-        'https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it
-    // http is package which we import
-    return http // so here we return http as we know then return then
-        .post(
-      url,
-      body: json.encode({
-        // json.encode available because we import dart:convert
-        'title': product.title,
-        'description': product.description,
-        'imageUrl': product.imageUrl,
-        'price': product.price,
-        'isFavorite': product.isFavorite
-      }),
-    )
-        .then((response) {
-      //print(json.decode(response.body));
+    const url ='https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it
+    
+    try{
+      // http is package which we import
+      final response = await http // so here we return http as we know then return then
+          .post(
+        url,
+        body: json.encode({
+          // json.encode available because we import dart:convert
+          'title': product.title,
+          'description': product.description,
+          'imageUrl': product.imageUrl,
+          'price': product.price,
+          'isFavorite': product.isFavorite
+        }),
+      );
+
       final newProduct = Product(
         title: product.title,
         description: product.description,
@@ -88,10 +88,12 @@ class Products with ChangeNotifier {
       _items.add(newProduct); // adding the product in the list
 
       notifyListeners();
-    }).catchError((err) {
+    
+    } catch (err) {
       print(err);
-      throw err; // now this is handle by our catch where we use this function
-    });
+      throw err;
+    }
+    
 
     //_items.insert(0, newProduct); // at the start of the list
     // notifyListeners(); available because of ChangeNotifier

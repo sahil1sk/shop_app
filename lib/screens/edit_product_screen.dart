@@ -17,8 +17,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _imageUrlController = TextEditingController(); // for getting the text
   final _imageUrlFocusNode = FocusNode();
   // <FormState> means using for the Form Widget
-  final _form =
-      GlobalKey<FormState>(); // we make the global key for submit data
+  final _form = GlobalKey<FormState>(); // we make the global key for submit data
   var _editiedProduct = Product(
     id: null,
     title: '',
@@ -90,7 +89,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   // for saving the data inside form this function is trigger by app bar icon
-  void _saveForm() {
+  // Future<void> means will return a future when we use asyn await
+  Future <void> _saveForm() async{
     // in isValid we will get value of true if all the validators return null if any error then it will return false
     final isValid =
         _form.currentState.validate(); // this will trigger all the validators
@@ -106,10 +106,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
       Provider.of<Products>(context, listen: false)
           .updateProduct(_editiedProduct.id, _editiedProduct);
     } else {
-      Provider.of<Products>(context, listen: false)
-          .addProduct(_editiedProduct)
-          .catchError((error) {
-        return showDialog(
+      
+      try{
+        await Provider.of<Products>(context, listen: false).addProduct(_editiedProduct);
+      } catch(err) {
+        await showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text('An error occurred!'),
@@ -124,14 +125,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
             ],
           ),
         );
-      }).then((_) {
+      } finally {
         setState(() {
-          _isLoading = false;
+        _isLoading = false;
         });
         Navigator.of(context).pop();
-      });
+      }
     }
-
     //Navigator.of(context).pop();
   }
 
