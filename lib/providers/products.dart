@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http; // so we normally use it like http.
 
 import './product.dart';
 
-
 // with help to add mixin it is like light inheritance
 // using with we merge other class features or properties
 class Products with ChangeNotifier {
@@ -55,24 +54,29 @@ class Products with ChangeNotifier {
 
   // return type of Product
   Product findById(String id) {
-    return _items.firstWhere((prod) => prod.id == id); // getting the item using id
+    return _items
+        .firstWhere((prod) => prod.id == id); // getting the item using id
   }
 
   // helps to add new products
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     //const url = 'https://flutter-learn-f4b08.firebaseio.com/'; // our firebase database url
-    const url = 'https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it
+    const url =
+        'https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it
     // http is package which we import
-    http.post(
-      url, 
-      body: json.encode({ // json.encode available because we import dart:convert
+    return http // so here we return http as we know then return then
+        .post(
+      url,
+      body: json.encode({
+        // json.encode available because we import dart:convert
         'title': product.title,
         'description': product.description,
         'imageUrl': product.imageUrl,
         'price': product.price,
         'isFavorite': product.isFavorite
-      }), 
-    ).then((response) {
+      }),
+    )
+        .then((response) {
       //print(json.decode(response.body));
       final newProduct = Product(
         title: product.title,
@@ -82,20 +86,20 @@ class Products with ChangeNotifier {
         id: json.decode(response.body)['name'],
       );
       _items.add(newProduct); // adding the product in the list
-        
+
       notifyListeners();
     });
-    
+
     //_items.insert(0, newProduct); // at the start of the list
     // notifyListeners(); available because of ChangeNotifier
-    // when this will run the only widgets not other only widgets that use this provider will rebuilt again 
-    // they understand there is some change happen in provider so they adopt that change 
+    // when this will run the only widgets not other only widgets that use this provider will rebuilt again
+    // they understand there is some change happen in provider so they adopt that change
   }
 
   // for updating the product
   void updateProduct(String id, Product editiedProduct) {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
-    if(prodIndex >= 0){
+    if (prodIndex >= 0) {
       _items[prodIndex] = editiedProduct;
       notifyListeners();
     } else {
