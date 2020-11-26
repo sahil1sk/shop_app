@@ -123,7 +123,7 @@ class Products with ChangeNotifier {
       notifyListeners();
     } catch (err) {
       print(err);
-      throw err;
+      throw err; // now this error is catch by who use that our method
     }
 
     //_items.insert(0, newProduct); // at the start of the list

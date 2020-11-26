@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/app_drawer.dart';
 import './cart_screen.dart';
-import '../widgets/products_grid.dart';
-import '../widgets/badge.dart';
 import '../providers/cart.dart';
 import '../providers/products.dart';
+import '../widgets/app_drawer.dart';
+import '../widgets/badge.dart';
+import '../widgets/products_grid.dart';
 
 //enum helps to sequence no behind labels
 enum FilterOptions {
@@ -34,9 +34,10 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   }
 
   @override // widget life cycle method will call when any change in there widget
-  void didChangeDependencies() { // we are not able to use asyn & await on the life cycle methods
+  void didChangeDependencies() {
+    // we are not able to use asyn & await on the life cycle methods
     super.didChangeDependencies();
-    if(_isInit) {
+    if (_isInit) {
       setState(() {
         _isLoading = true;
       });
@@ -55,23 +56,26 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       appBar: AppBar(
         title: Text('MyShop'),
         actions: <Widget>[
-          PopupMenuButton( // helps to give overlay
+          PopupMenuButton(
+            // helps to give overlay
             onSelected: (FilterOptions selectedValue) {
               setState(() {
-                if(selectedValue == FilterOptions.Favorites) {
+                if (selectedValue == FilterOptions.Favorites) {
                   _showOnlyFavorites = true;
                 } else {
                   _showOnlyFavorites = false;
-                }  
+                }
               });
             },
-            icon: Icon( // Icon to show 
+            icon: Icon(
+              // Icon to show
               Icons.more_vert,
             ),
             itemBuilder: (ctx) => [
               PopupMenuItem(
                 child: Text('Only Favorites'),
-                value: FilterOptions.Favorites, // unique value for each item inside
+                value: FilterOptions
+                    .Favorites, // unique value for each item inside
               ),
               PopupMenuItem(
                 child: Text('Show All'),
@@ -79,12 +83,15 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               ),
             ],
           ),
-          Consumer<Cart>( // data Provider
-            builder: (ctx, cartData, child) => Badge( // Badge is our custom widget
+          Consumer<Cart>(
+            // data Provider
+            builder: (ctx, cartData, child) => Badge(
+              // Badge is our custom widget
               child: child,
               value: cartData.itemCount.toString(),
             ),
-            child: IconButton( // so this child will cannot be built 
+            child: IconButton(
+              // so this child will cannot be built
               icon: Icon(Icons.shopping_cart),
               onPressed: () {
                 Navigator.of(context).pushNamed(CartScreen.routeName);
@@ -94,10 +101,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: _isLoading ? Center(
-        child: CircularProgressIndicator(), // loading indicator
-        ) : ProductsGrid(_showOnlyFavorites),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(), // loading indicator
+            )
+          : ProductsGrid(_showOnlyFavorites),
     );
   }
 }
-
