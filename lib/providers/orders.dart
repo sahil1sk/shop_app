@@ -27,6 +27,33 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
+  // getting the orders from the firebase
+  Future<void> fetchAndSetOrders() async {
+    const url = 'https://flutter-learn-f4b08.firebaseio.com/orders.json';
+    final response = await http.get(url);
+    final List<OrderItem> loadedOrders = [];
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if (extractedData == null) return; // if there is no data then simply return
+    // we are getting through map using for each
+    extractedData.forEach((orderId, orderData) {
+      loadedOrders.add(OrderItem(
+          id: orderId,
+          amount: orderData['amount'],
+          dateTime: DateTime.parse(orderData['dateTime']),
+          products: (orderData['products'] as List<dynamic>)
+              .map((item) => CartItem(
+                    id: item['id'],
+                    price: item['price'],
+                    quantity: item['quantity'],
+                    title: item['title'],
+                  )) // converting the map data into list finally
+              .toList()));
+    });
+
+    _orders = loadedOrders.reversed.toList();
+    notifyListeners();
+  }
+
   // helps to add the orders
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     const url = 'https://flutter-learn-f4b08.firebaseio.com/orders.json';
