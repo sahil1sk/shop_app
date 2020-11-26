@@ -1,4 +1,7 @@
+import 'dart:convert'; // thses offeres tools to converting data like the object data to json data
+
 import 'package:flutter/foundation.dart'; // to use ChangeNot
+import 'package:http/http.dart' as http; // so we normally use it like http.
 
 class Product with ChangeNotifier {
   final String id;
@@ -17,12 +20,31 @@ class Product with ChangeNotifier {
     this.isFavorite = false, // default value of false
   });
 
+  void _setFavValue(bool newValue) {
+    isFavorite = newValue;
+    notifyListeners();
+  }
+
   // to set favorite and unfavorite
-  void toggleFavoriteStatus() {
+  Future<void> toggleFavoriteStatus() async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
 
-    //http.patch();
+    final url = 'https://flutter-learn-f4b08.firebaseio.com/products/$id.json';
+    try {
+      final response = await http.patch(
+        // helps to updating the data in the firebase
+        url,
+        body: json.encode({
+          'isFavorite': isFavorite,
+        }),
+      );
+      if (response.statusCode >= 400) {
+        _setFavValue(oldStatus);
+      }
+    } catch (err) {
+      _setFavValue(oldStatus);
+    }
   }
 }
