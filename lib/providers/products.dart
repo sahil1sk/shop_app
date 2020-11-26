@@ -3,6 +3,7 @@ import 'dart:convert'; // thses offeres tools to converting data like the object
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // so we normally use it like http.
 
+import '../models/http_exception.dart';
 import './product.dart';
 
 // with help to add mixin it is like light inheritance
@@ -149,8 +150,20 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
+  Future<void> deleteProduct(String id) async {
+    final url ='https://flutter-learn-f4b08.firebaseio.com/products/$id.json';
+    final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+    var exisitingProduct = _items[existingProductIndex]; // getting the product refrence
+    
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+
+    final response = await http.delete(url); 
+    if(response.statusCode >= 400){
+      _items.insert(existingProductIndex, exisitingProduct);
+      notifyListeners();
+      throw HttpException('Could not delete product.');
+    }
+    exisitingProduct = null;
   }
 }
