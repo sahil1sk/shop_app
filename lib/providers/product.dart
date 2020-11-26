@@ -19,10 +19,10 @@ class Product with ChangeNotifier {
 
   // to set favorite and unfavorite
   void toggleFavoriteStatus() {
+    final oldStatus = isFavorite;
     isFavorite = !isFavorite;
-    // notifyListeners(); available because of ChangeNotifier
-    // when this will run the only widgets not other only widgets that use this provider will rebuilt again 
-    // they understand there is some change happen in provider so they adopt that change
     notifyListeners();
+
+    //http.patch();
   }
 }

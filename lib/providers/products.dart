@@ -3,8 +3,8 @@ import 'dart:convert'; // thses offeres tools to converting data like the object
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // so we normally use it like http.
 
-import '../models/http_exception.dart';
 import './product.dart';
+import '../models/http_exception.dart';
 
 // with help to add mixin it is like light inheritance
 // using with we merge other class features or properties
@@ -61,14 +61,17 @@ class Products with ChangeNotifier {
 
   // void means our awiat that we use which will not return anything
   Future<void> fetchAndSetProducts() async {
-    const url ='https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it    
+    const url =
+        'https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it
 
-    try{
-      final response =  await http.get(url);
-      final extractedData = json.decode(response.body) as Map<String, dynamic>; // dynamic means any
+    try {
+      final response = await http.get(url);
+      final extractedData = json.decode(response.body)
+          as Map<String, dynamic>; // dynamic means any
       final List<Product> loadedProducts = [];
       // going over each item in the map use forEach loop
-      extractedData.forEach((prodId, prodData) {  // prodId is the key
+      extractedData.forEach((prodId, prodData) {
+        // prodId is the key
         loadedProducts.add(Product(
           id: prodId,
           title: prodData['title'],
@@ -80,7 +83,7 @@ class Products with ChangeNotifier {
       });
       _items = loadedProducts;
       notifyListeners();
-    }catch(err){
+    } catch (err) {
       throw err;
     }
   }
@@ -88,12 +91,14 @@ class Products with ChangeNotifier {
   // helps to add new products // Future<void> means will return a future
   Future<void> addProduct(Product product) async {
     //const url = 'https://flutter-learn-f4b08.firebaseio.com/'; // our firebase database url
-    const url ='https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it
-    
-    try{
+    const url =
+        'https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it
+
+    try {
       // http is package which we import
-      final response = await http // so here we return http as we know then return then
-          .post(
+      final response =
+          await http // so here we return http as we know then return then
+              .post(
         url,
         body: json.encode({
           // json.encode available because we import dart:convert
@@ -115,12 +120,10 @@ class Products with ChangeNotifier {
       _items.add(newProduct); // adding the product in the list
 
       notifyListeners();
-    
     } catch (err) {
       print(err);
       throw err;
     }
-    
 
     //_items.insert(0, newProduct); // at the start of the list
     // notifyListeners(); available because of ChangeNotifier
@@ -132,9 +135,11 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product editiedProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url ='https://flutter-learn-f4b08.firebaseio.com/products/$id.json';
-      await http.patch( //in firebase patch request will merge the data which we send 
-        url, 
+      final url =
+          'https://flutter-learn-f4b08.firebaseio.com/products/$id.json';
+      await http.patch(
+        //in firebase patch request will merge the data which we send
+        url,
         body: json.encode({
           'title': editiedProduct.title,
           'description': editiedProduct.description,
@@ -151,15 +156,17 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url ='https://flutter-learn-f4b08.firebaseio.com/products/$id.json';
+    final url =
+        'https://flutter-learn-f4b08.firebaseio.com/products/$id.json'; //.json';
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
-    var exisitingProduct = _items[existingProductIndex]; // getting the product refrence
-    
+    var exisitingProduct =
+        _items[existingProductIndex]; // getting the product refrence
+
     _items.removeAt(existingProductIndex);
     notifyListeners();
 
-    final response = await http.delete(url); 
-    if(response.statusCode >= 400){
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
       _items.insert(existingProductIndex, exisitingProduct);
       notifyListeners();
       throw HttpException('Could not delete product.');
