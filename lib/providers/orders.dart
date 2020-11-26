@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 
 import './cart.dart';
 
@@ -25,16 +28,37 @@ class Orders with ChangeNotifier {
   }
 
   // helps to add the orders
-  void addOrder(List<CartItem> cartProducts, double total) {
+  Future<void> addOrder(List<CartItem> cartProducts, double total) async {
+    const url = 'https://flutter-learn-f4b08.firebaseio.com/orders.json';
+    final timestamp = DateTime.now();
+
+    final response = await http.post(
+      url,
+      body: json.encode({
+        'amount': total,
+        'dateTime': timestamp
+            .toIso8601String(), // converting into the special string  so that we will convert into the datetime later
+        'products': cartProducts.map((cp) {
+          return {
+            'id': cp.id,
+            'title': cp.title,
+            'quantity': cp.quantity,
+            'price': cp.price
+          };
+        }).toList(),
+      }),
+    );
+
     // helps to add at 0 index means at first place
-    _orders.insert(0, OrderItem(
-      id: DateTime.now().toString(),
-      amount: total,
-      products: cartProducts,
-      dateTime: DateTime.now(),
-    ));
+    _orders.insert(
+        0,
+        OrderItem(
+          id: json.decode(response.body)['name'],
+          amount: total,
+          products: cartProducts,
+          dateTime: timestamp,
+        ));
 
     notifyListeners();
   }
-
 }
