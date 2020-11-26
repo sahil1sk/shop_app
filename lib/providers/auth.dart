@@ -9,17 +9,31 @@ class Auth with ChangeNotifier { // ChangeNotifier to use notifyListener()
   String _userId;
 
   // returning the future of void type
-  Future<void> signup(String email, String password) async {
+  Future<void> _authenticate(
+    String email, String password, String urlSegment) async {
     // AIzaSyAtWPEnY_YyJ1E4FXLwnGVgo7hBm9Bhlx0 // go to your firbase project than settings than project settings and then where you will find the web api key
-    const url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAtWPEnY_YyJ1E4FXLwnGVgo7hBm9Bhlx0';
+    final url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/$urlSegment?key=AIzaSyAtWPEnY_YyJ1E4FXLwnGVgo7hBm9Bhlx0';
     final response = await http.post(
       url,
-      body: json.encode({
-        'email': email,
-        'password': password,
-        'returnSecureToken': true // means return the token
-      }),
+      body: json.encode(
+        {
+          'email': email,
+          'password': password,
+          'returnSecureToken': true,
+        },
+      ),
     );
     print(json.decode(response.body));
   }
+
+  Future<void> signup(String email, String password) async {
+    return _authenticate(email, password, 'signupNewUser');
+  }
+
+  Future<void> login(String email, String password) async {
+    return _authenticate(email, password, 'verifyPassword');
+  }
+
+
+
 }
