@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/http_exception.dart';
 import '../providers/auth.dart';
 
 enum AuthMode { Signup, Login }
@@ -103,6 +104,24 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context, 
+      builder: (ctx) => AlertDialog(
+        title: Text('An Error Occured!'),
+        content: Text(message),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            }, 
+            child: Text('Okay'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState.validate()) {
       // Invalid!
@@ -112,19 +131,42 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      // Log user in
-      await Provider.of<Auth>(context, listen: false).login(
-        _authData['email'], 
-        _authData['password']
-      );
-    } else {
-      // Sign user up
-      await Provider.of<Auth>(context, listen: false).signup(
-        _authData['email'], 
-        _authData['password']
-      );
+
+    try{
+      if (_authMode == AuthMode.Login) {
+        // Log user in
+        await Provider.of<Auth>(context, listen: false).login(
+          _authData['email'], 
+          _authData['password']
+        );
+      } else {
+        // Sign user up
+        await Provider.of<Auth>(context, listen: false).signup(
+          _authData['email'], 
+          _authData['password']
+        );
+      }
+    } on HttpException catch(error) { // if we fail validation of data then this error will triegger
+      print('Error is there $error');
+      var errMessage = 'Authentication Failed';
+      if (error.toString().contains('EMAIL_EXISTS')) {
+        errMessage = 'This email address is already in use.'; 
+      } else if (error.toString().contains('INVALID_EMAIL')) {
+        errMessage = 'This is not a valid email address';
+      } else if (error.toString().contains('WEAK_PASSWORD')) {
+        errMessage = 'Password is too weak';
+      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
+        errMessage = 'Could not find a user with this email';
+      } else if (error.toString().contains('INVALID_PASSWORD')) {
+        errMessage = 'Invalid password.';
+      }
+      _showErrorDialog(errMessage);
+    } catch (error) { // this error will take place when there is no proper network connection
+      // catch error will occur like before reaching the request but HttpExcception is occur when we response and through error from there
+      const errMessage = 'Could not login please try again letter!';
+      _showErrorDialog(errMessage);
     }
+    
     setState(() {
       _isLoading = false;
     });
