@@ -44,6 +44,10 @@ class Products with ChangeNotifier {
     // ),
   ];
 
+  final String authToken;
+
+  Products(this.authToken, this._items);
+
   List<Product> get items {
     return [..._items]; // returning the copy of items
   }
@@ -61,8 +65,7 @@ class Products with ChangeNotifier {
 
   // void means our awiat that we use which will not return anything
   Future<void> fetchAndSetProducts() async {
-    const url =
-        'https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it
+    final url = 'https://flutter-learn-f4b08.firebaseio.com/products.json?auth=$authToken'; // it will create product folder of json type if not there if there then use it
 
     try {
       final response = await http.get(url);

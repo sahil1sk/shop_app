@@ -22,10 +22,16 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       // to wrap with multiple data provider use given way
       providers: [
-        ChangeNotifierProvider(
+        ChangeNotifierProvider.value(
+          // this approach normally used while providing data to gid and list
+          value: Auth(),
+        ),
+        // proxyProvider is just like if the data is not available yet then it will be provided latter
+        ChangeNotifierProxyProvider<Auth, Products>( // the Auth data you depend on Products which data you are providing
           // available because of provider package
-          create: (ctx) =>
-              Products(), // creating the instance of class which data we want to provide
+          update: (ctx, auth, previousProducts) => // proxyProvider helps to provide the proxy data means the data depend on other data
+              Products(auth.token, previousProducts == null ? [] : previousProducts.items), // creating the instance of class which data we want to provide
+          create: null,
         ),
         ChangeNotifierProvider(
           create: (ctx) => Cart(),
@@ -33,10 +39,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           // this approach normally used while providing data to gid and list
           value: Orders(),
-        ),
-        ChangeNotifierProvider.value(
-          // this approach normally used while providing data to gid and list
-          value: Auth(),
         ),
       ],
       child: Consumer<Auth>(
