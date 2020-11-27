@@ -48,7 +48,7 @@ class ProductItem extends StatelessWidget {
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
               color: Theme.of(context).accentColor,
               onPressed: () {
-                product.toggleFavoriteStatus(authData.token);
+                product.toggleFavoriteStatus(authData.token, authData.userId);
               },
               //icon: child, // Example like if use child in this way child component cannot be built again
             ),

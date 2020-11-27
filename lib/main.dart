@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
                   previousProducts) => // proxyProvider helps to provide the proxy data means the data depend on other data
               Products(
                   auth.token,
+                  auth.userId,
                   previousProducts == null
                       ? []
                       : previousProducts

@@ -45,8 +45,13 @@ class Products with ChangeNotifier {
   ];
 
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(
+    this.authToken,
+    this.userId,
+    this._items,
+  );
 
   List<Product> get items {
     return [..._items]; // returning the copy of items
@@ -65,7 +70,7 @@ class Products with ChangeNotifier {
 
   // void means our awiat that we use which will not return anything
   Future<void> fetchAndSetProducts() async {
-    final url =
+    var url =
         'https://flutter-learn-f4b08.firebaseio.com/products.json?auth=$authToken'; // it will create product folder of json type if not there if there then use it
 
     try {
@@ -73,6 +78,13 @@ class Products with ChangeNotifier {
       final extractedData = json.decode(response.body)
           as Map<String, dynamic>; // dynamic means any
       if (extractedData == null) return; // if there is no data then return
+
+      url =
+          'https://flutter-learn-f4b08.firebaseio.com/products/$userId.json?auth=$authToken';
+
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
+
       final List<Product> loadedProducts = [];
       // going over each item in the map use forEach loop
       extractedData.forEach((prodId, prodData) {
@@ -82,7 +94,10 @@ class Products with ChangeNotifier {
           title: prodData['title'],
           description: prodData['description'],
           price: prodData['price'],
-          isFavorite: prodData['isFavorite'],
+          isFavorite: favoriteData == null
+              ? false
+              : favoriteData[prodId] ??
+                  false, // favoriteData[prodId] ??  if this is null then we will take false otherwise id
           imageUrl: prodData['imageUrl'],
         ));
       });
@@ -111,7 +126,6 @@ class Products with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': product.isFavorite
         }),
       );
 

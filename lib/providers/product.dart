@@ -26,19 +26,19 @@ class Product with ChangeNotifier {
   }
 
   // to set favorite and unfavorite
-  Future<void> toggleFavoriteStatus(String token) async {
+  Future<void> toggleFavoriteStatus(String token, String userId) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
 
     final url =
-        'https://flutter-learn-f4b08.firebaseio.com/products/$id.json?auth=$token';
+        'https://flutter-learn-f4b08.firebaseio.com/products/$userId/$id.json?auth=$token';
     try {
-      final response = await http.patch(
-        // helps to updating the data in the firebase
+      final response = await http.put(
+        // so here we are updating the data not merging
         url,
         body: json.encode({
-          'isFavorite': isFavorite,
+          isFavorite,
         }),
       );
       if (response.statusCode >= 400) {
