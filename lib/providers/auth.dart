@@ -1,5 +1,7 @@
+import 'dart:async'; // for using the timer function
 import 'dart:convert'; //we use dart:convert for use json decode
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart'; // to use changeNotifier
 import 'package:http/http.dart' as http;
 
@@ -10,6 +12,7 @@ class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
   String _userId;
+  Timer _authTimer;
 
   bool get isAuth {
     // if token is there then return other wise null
@@ -61,6 +64,8 @@ class Auth with ChangeNotifier {
           ),
         ),
       );
+
+      _autoLogout();
       notifyListeners();
     } catch (error) {
       throw error;
@@ -77,5 +82,32 @@ class Auth with ChangeNotifier {
     final url =
         'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$keyIs';
     return _authenticate(email, password, url);
+  }
+
+  // adding logout function
+  void logout() {
+    _token = null;
+    _userId = null;
+    _expiryDate = null;
+
+    // if there is an already time is going on than we will cancel that time
+    if (_authTimer != null) {
+      _authTimer.cancel();
+      _authTimer = null;
+    }
+    notifyListeners();
+  }
+
+  void _autoLogout() {
+    // if there is an already time is going on than we will cancel that time
+    if (_authTimer != null) _authTimer.cancel();
+
+    final timeToExpiry = _expiryDate
+        .difference(DateTime.now())
+        .inSeconds; // getting the difference from now time to expiry time
+
+    // timer function is available because of dart async
+    _authTimer = Timer(Duration(seconds: timeToExpiry),
+        logout); // Timer takes two argument first time in seconds then callback function which will call when time is finished
   }
 }
