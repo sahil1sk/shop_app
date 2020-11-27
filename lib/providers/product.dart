@@ -26,12 +26,13 @@ class Product with ChangeNotifier {
   }
 
   // to set favorite and unfavorite
-  Future<void> toggleFavoriteStatus() async {
+  Future<void> toggleFavoriteStatus(String token) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
 
-    final url = 'https://flutter-learn-f4b08.firebaseio.com/products/$id.json';
+    final url =
+        'https://flutter-learn-f4b08.firebaseio.com/products/$id.json?auth=$token';
     try {
       final response = await http.patch(
         // helps to updating the data in the firebase

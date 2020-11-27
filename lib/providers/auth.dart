@@ -1,16 +1,18 @@
-import 'dart:convert'; //we use dart:convert for use json decode 
+import 'dart:convert'; //we use dart:convert for use json decode
 
 import 'package:flutter/widgets.dart'; // to use changeNotifier
 import 'package:http/http.dart' as http;
+
 import '../models/http_exception.dart';
 
-class Auth with ChangeNotifier { // ChangeNotifier to use notifyListener()
+class Auth with ChangeNotifier {
+  // ChangeNotifier to use notifyListener()
   String _token;
   DateTime _expiryDate;
   String _userId;
 
   bool get isAuth {
-    // if token is there then return other wise null 
+    // if token is there then return other wise null
     return token != null;
   }
 
@@ -23,12 +25,12 @@ class Auth with ChangeNotifier { // ChangeNotifier to use notifyListener()
     return null;
   }
 
-  final keyIs = '';
-    // keyIs // go to your firbase project than settings than project settings and then where you will find the web api key
+  final keyIs = 'AIzaSyDOt0_X2u7ZA7cB7Cvxw2yAaLtwRBmHy4o';
+  // keyIs // go to your firbase project than settings than project settings and then where you will find the web api key
 
   // returning the future of void type
   Future<void> _authenticate(
-    String email, String password, String urlSegment) async {
+      String email, String password, String urlSegment) async {
     final url = urlSegment;
 
     try {
@@ -62,13 +64,14 @@ class Auth with ChangeNotifier { // ChangeNotifier to use notifyListener()
   }
 
   Future<void> signup(String email, String password) async {
-    final url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$keyIs';
+    final url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$keyIs';
     return _authenticate(email, password, url);
   }
 
   Future<void> login(String email, String password) async {
-    final url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$keyIs';
+    final url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$keyIs';
     return _authenticate(email, password, url);
   }
-
 }

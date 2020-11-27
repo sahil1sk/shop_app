@@ -65,7 +65,8 @@ class Products with ChangeNotifier {
 
   // void means our awiat that we use which will not return anything
   Future<void> fetchAndSetProducts() async {
-    final url = 'https://flutter-learn-f4b08.firebaseio.com/products.json?auth=$authToken'; // it will create product folder of json type if not there if there then use it
+    final url =
+        'https://flutter-learn-f4b08.firebaseio.com/products.json?auth=$authToken'; // it will create product folder of json type if not there if there then use it
 
     try {
       final response = await http.get(url);
@@ -95,8 +96,8 @@ class Products with ChangeNotifier {
   // helps to add new products // Future<void> means will return a future
   Future<void> addProduct(Product product) async {
     //const url = 'https://flutter-learn-f4b08.firebaseio.com/'; // our firebase database url
-    const url =
-        'https://flutter-learn-f4b08.firebaseio.com/products.json'; // it will create product folder of json type if not there if there then use it
+    final url =
+        'https://flutter-learn-f4b08.firebaseio.com/products.json?auth=$authToken'; // it will create product folder of json type if not there if there then use it
 
     try {
       // http is package which we import
@@ -140,7 +141,7 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       final url =
-          'https://flutter-learn-f4b08.firebaseio.com/products/$id.json';
+          'https://flutter-learn-f4b08.firebaseio.com/products/$id.json?auth=$authToken';
       await http.patch(
         //in firebase patch request will merge the data which we send
         url,
@@ -161,7 +162,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        'https://flutter-learn-f4b08.firebaseio.com/products/$id.json'; //.json';
+        'https://flutter-learn-f4b08.firebaseio.com/products/$id.json?auth=$authToken'; //.json';
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var exisitingProduct =
         _items[existingProductIndex]; // getting the product refrence
