@@ -95,7 +95,7 @@ class AuthCard extends StatefulWidget {
 }
 
 // SingleTickerProviderStateMixin helps to use the _controller to animate
-class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin {
+class _AuthCardState extends State<AuthCard> /*with SingleTickerProviderStateMixin */{
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
   Map<String, String> _authData = {
@@ -104,25 +104,25 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
-  AnimationController _controller; // helps to controlling animations
-  Animation<Size> _heightAnimation; // <Size> means we want to animate the size
+  // AnimationController _controller; // helps to controlling animations
+  // Animation<Size> _heightAnimation; // <Size> means we want to animate the size
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,  // this means animate this widget
-      duration: Duration(milliseconds: 300), 
-    );
+    // _controller = AnimationController(
+    //   vsync: this,  // this means animate this widget
+    //   duration: Duration(milliseconds: 300), 
+    // );
 
-    // <Size> we animate the size
-    _heightAnimation = Tween<Size>( // tween helps how to animate between two values
-      begin: Size(double.infinity, 260), // setting the begin width and height
-      end: Size(double.infinity, 320),     // setting at end what the width and height       
-    ).animate(CurvedAnimation(
-      parent: _controller,          // setting the controller which contain for which this animation is and duration
-      curve: Curves.fastOutSlowIn, // setting the animation type
-    ));
+    // // <Size> we animate the size
+    // _heightAnimation = Tween<Size>( // tween helps how to animate between two values
+    //   begin: Size(double.infinity, 260), // setting the begin width and height
+    //   end: Size(double.infinity, 320),     // setting at end what the width and height       
+    // ).animate(CurvedAnimation(
+    //   parent: _controller,          // setting the controller which contain for which this animation is and duration
+    //   curve: Curves.fastOutSlowIn, // setting the animation type
+    // ));
 
     // so adding listenere so that when animate begines we will rebuilt the widget for animate
     //_heightAnimation.addListener(() => setState(() {}));
@@ -132,7 +132,7 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose(); // disposing the animate controller
+    //_controller.dispose(); // disposing the animate controller
   }
 
   void _showErrorDialog(String message) {
@@ -208,12 +208,12 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
       setState(() {
         _authMode = AuthMode.Signup;
       });
-      _controller.forward(); // starts the animation
+      //_controller.forward(); // starts the animation
     } else {
       setState(() {
         _authMode = AuthMode.Login;
       });
-      _controller.reverse(); // here we reverse the animation
+      //_controller.reverse(); // here we reverse the animation
     }
   }
 
@@ -224,17 +224,17 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      elevation: 8.0, // As we do in consumer now the child is not built only the container is rebuilt again
-      child: AnimatedBuilder(animation: _heightAnimation, builder: (ctx, child) => Container(
-          //height: _authMode == AuthMode.Signup ? 320 : 260,
-          height: _heightAnimation.value.height,
-          constraints: BoxConstraints(minHeight: _heightAnimation.value.height),
-              //BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
-          width: deviceSize.width * 0.75,
-          padding: EdgeInsets.all(16.0),
-          child: child,
-          ),
-          child: Form(
+      elevation: 8.0, 
+      child: AnimatedContainer( // AnimatedContainer will auto detect the change and the show it in animated way you just need to set duration and curve
+        duration: Duration(milliseconds: 300), // setting total duration of animation
+        curve: Curves.easeIn, // setting animation type
+        height: _authMode == AuthMode.Signup ? 320 : 260,
+        //height: _heightAnimation.value.height,
+        constraints: //BoxConstraints(minHeight: _heightAnimation.value.height),
+            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+        width: deviceSize.width * 0.75,
+        padding: EdgeInsets.all(16.0),
+        child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
