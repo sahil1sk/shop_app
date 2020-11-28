@@ -125,7 +125,7 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
     ));
 
     // so adding listenere so that when animate begines we will rebuilt the widget for animate
-    _heightAnimation.addListener(() => setState(() {}));
+    //_heightAnimation.addListener(() => setState(() {}));
 
   }
 
@@ -224,15 +224,17 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      elevation: 8.0,
-      child: Container(
-        //height: _authMode == AuthMode.Signup ? 320 : 260,
-        height: _heightAnimation.value.height,
-        constraints: BoxConstraints(minHeight: _heightAnimation.value.height),
-            //BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
-        width: deviceSize.width * 0.75,
-        padding: EdgeInsets.all(16.0),
-        child: Form(
+      elevation: 8.0, // As we do in consumer now the child is not built only the container is rebuilt again
+      child: AnimatedBuilder(animation: _heightAnimation, builder: (ctx, child) => Container(
+          //height: _authMode == AuthMode.Signup ? 320 : 260,
+          height: _heightAnimation.value.height,
+          constraints: BoxConstraints(minHeight: _heightAnimation.value.height),
+              //BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+          width: deviceSize.width * 0.75,
+          padding: EdgeInsets.all(16.0),
+          child: child,
+          ),
+          child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
@@ -306,7 +308,7 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
             ),
           ),
         ),
-      ),
+      ),  
     );
   }
 }
