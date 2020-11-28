@@ -95,7 +95,7 @@ class AuthCard extends StatefulWidget {
 }
 
 // SingleTickerProviderStateMixin helps to use the _controller to animate
-class _AuthCardState extends State<AuthCard> /*with SingleTickerProviderStateMixin */{
+class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
   Map<String, String> _authData = {
@@ -104,16 +104,38 @@ class _AuthCardState extends State<AuthCard> /*with SingleTickerProviderStateMix
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
-  // AnimationController _controller; // helps to controlling animations
-  // Animation<Size> _heightAnimation; // <Size> means we want to animate the size
+  AnimationController _controller; // helps to controlling animations
+  //Animation<Size> _heightAnimation; // <Size> means we want to animate the size
+  Animation<Offset> _slideAnimation;
+  Animation<double> _opacityAnimation;
 
   @override
   void initState() {
     super.initState();
-    // _controller = AnimationController(
-    //   vsync: this,  // this means animate this widget
-    //   duration: Duration(milliseconds: 300), 
-    // );
+    _controller = AnimationController(
+      vsync: this,  // this means animate this widget
+      duration: Duration(milliseconds: 300), 
+    );
+
+    _opacityAnimation = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeIn,
+      ),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, -1.5), // 0 for x -1.5 for y
+      end: Offset(0, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
 
     // // <Size> we animate the size
     // _heightAnimation = Tween<Size>( // tween helps how to animate between two values
@@ -124,6 +146,7 @@ class _AuthCardState extends State<AuthCard> /*with SingleTickerProviderStateMix
     //   curve: Curves.fastOutSlowIn, // setting the animation type
     // ));
 
+
     // so adding listenere so that when animate begines we will rebuilt the widget for animate
     //_heightAnimation.addListener(() => setState(() {}));
 
@@ -132,7 +155,7 @@ class _AuthCardState extends State<AuthCard> /*with SingleTickerProviderStateMix
   @override
   void dispose() {
     super.dispose();
-    //_controller.dispose(); // disposing the animate controller
+    _controller.dispose(); // disposing the animate controller
   }
 
   void _showErrorDialog(String message) {
@@ -208,12 +231,12 @@ class _AuthCardState extends State<AuthCard> /*with SingleTickerProviderStateMix
       setState(() {
         _authMode = AuthMode.Signup;
       });
-      //_controller.forward(); // starts the animation
+      _controller.forward(); // starts the animation
     } else {
       setState(() {
         _authMode = AuthMode.Login;
       });
-      //_controller.reverse(); // here we reverse the animation
+      _controller.reverse(); // here we reverse the animation
     }
   }
 
@@ -265,19 +288,32 @@ class _AuthCardState extends State<AuthCard> /*with SingleTickerProviderStateMix
                     _authData['password'] = value;
                   },
                 ),
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.Signup,
-                    decoration: InputDecoration(labelText: 'Confirm Password'),
-                    obscureText: true,
-                    validator: _authMode == AuthMode.Signup
-                        ? (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
-                            }
-                          }
-                        : null,
+                AnimatedContainer( // we set the height 0 if we are in login mode so that our text field so space not visible
+                  duration: Duration(milliseconds: 300),
+                  constraints: BoxConstraints( // means inner height
+                    minHeight: _authMode == AuthMode.Signup ? 60 : 0, 
+                    maxHeight: _authMode == AuthMode.Signup ? 120 : 0,
                   ),
+                  curve: Curves.easeIn,
+                  child: FadeTransition( // so we gave fade effect to text field
+                    opacity: _opacityAnimation, // opacity want an animation object it auto matically set the listener as animatted builder do
+                    child: SlideTransition(
+                      position: _slideAnimation, // setting the slide animation object
+                      child: TextFormField(
+                        enabled: _authMode == AuthMode.Signup,
+                        decoration: InputDecoration(labelText: 'Confirm Password'),
+                        obscureText: true,
+                        validator: _authMode == AuthMode.Signup
+                            ? (value) {
+                                if (value != _passwordController.text) {
+                                  return 'Passwords do not match!';
+                                }
+                              }
+                            : null,
+                      ),
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 20,
                 ),
