@@ -13,6 +13,7 @@ import './screens/product_detail_screen.dart';
 import './screens/products_overview_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/splash_screen.dart';
+import './helpers/custom_route.dart';
 
 void main() => runApp(MyApp());
 
@@ -65,6 +66,12 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.purple,
             accentColor: Colors.deepOrange,
             fontFamily: 'Lato',
+            pageTransitionsTheme: PageTransitionsTheme( // helps to set the animation when we come inside the page
+              builders: { // helps to set the animation for different platforms like android ios
+                TargetPlatform.android: CustomPageTransitionBuilder(),
+                TargetPlatform.iOS: CustomPageTransitionBuilder(), 
+              },
+            ),
           ),
           home: auth.isAuth ? ProductsOverviewScreen() : FutureBuilder(
             future: auth.tryAutoLogin(), // authResultSnapshot => The data containing the status of on going future request
